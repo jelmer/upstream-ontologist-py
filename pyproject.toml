@@ -26,8 +26,8 @@ file = "README.md"
 content-type = "text/markdown"
 
 [project.urls]
-Homepage = "https://github.com/jelmer/upstream-ontologist"
-Repository = "https://github.com/jelmer/upstream-ontologist.git"
+Homepage = "https://github.com/jelmer/upstream-ontologist-py"
+Repository = "https://github.com/jelmer/upstream-ontologist-py.git"
 
 [project.optional-dependencies]
 debian_changelog = [
