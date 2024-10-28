@@ -249,9 +249,9 @@ dependencies = [
 
 [[package]]
 name = "breezyshim"
-version = "0.1.205"
+version = "0.1.213"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0b65aed03af8411fde0dbc3af7243cb72c366716d7e4374dd7ba135bd4d445d9"
+checksum = "6a0b670c2a2a927aeef6c6b96fdff0368992b462946f6922848b232a50891dd1"
 dependencies = [
  "chrono",
  "ctor",
@@ -903,9 +903,9 @@ dependencies = [
 
 [[package]]
 name = "debian-changelog"
-version = "0.1.14"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b616910c0602f11746ba04c1b7af7e7d54c7f05c2b84ce56ce7e33ca1b5627d7"
+checksum = "98258e2066472d8d04bfe8a3fab2e7be77fe87b913dab2308a59f13061145814"
 dependencies = [
  "chrono",
  "debversion",
@@ -5133,9 +5133,9 @@ dependencies = [
 
 [[package]]
 name = "upstream-ontologist"
-version = "0.1.45"
+version = "0.1.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c846c32ff7b39355b04f174eb36f786fafd308fbfa22d9263eb97dc697da9ab2"
+checksum = "c8c276c41b63e2e23dd253f7d2b58b89e0a26381c74689a7aaf8da3551c96418"
 dependencies = [
  "breezyshim",
  "chrono",
