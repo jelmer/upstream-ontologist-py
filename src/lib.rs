@@ -1,3 +1,4 @@
+use futures::StreamExt;
 use pyo3::exceptions::{PyKeyError, PyRuntimeError, PyStopIteration, PyValueError};
 use pyo3::import_exception;
 use pyo3::prelude::*;
@@ -19,18 +20,21 @@ fn drop_vcs_in_scheme(url: &str) -> String {
 fn canonical_git_repo_url(url: &str, net_access: Option<bool>) -> PyResult<String> {
     let url =
         Url::parse(url).map_err(|e| PyRuntimeError::new_err(format!("Invalid URL: {}", e)))?;
-    Ok(
-        upstream_ontologist::vcs::canonical_git_repo_url(&url, net_access)
-            .map_or_else(|| url.to_string(), |u| u.to_string()),
-    )
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    Ok(rt
+        .block_on(upstream_ontologist::vcs::canonical_git_repo_url(
+            &url, net_access,
+        ))
+        .map_or_else(|| url.to_string(), |u| u.to_string()))
 }
 
 #[pyfunction]
 #[pyo3(signature = (url, net_access=None))]
 fn find_public_repo_url(url: &str, net_access: Option<bool>) -> PyResult<Option<String>> {
-    Ok(upstream_ontologist::vcs::find_public_repo_url(
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    Ok(rt.block_on(upstream_ontologist::vcs::find_public_repo_url(
         url, net_access,
-    ))
+    )))
 }
 
 #[pyfunction]
@@ -52,8 +56,13 @@ pub fn find_secure_repo_url(
     branch: Option<&str>,
     net_access: Option<bool>,
 ) -> Option<String> {
-    upstream_ontologist::vcs::find_secure_repo_url(url.parse().unwrap(), branch, net_access)
-        .map(|u| u.to_string())
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(upstream_ontologist::vcs::find_secure_repo_url(
+        url.parse().unwrap(),
+        branch,
+        net_access,
+    ))
+    .map(|u| u.to_string())
 }
 
 #[pyfunction]
@@ -69,13 +78,14 @@ fn fixup_broken_git_details(
     branch: Option<&str>,
     subpath: Option<&str>,
 ) -> (String, Option<String>, Option<String>) {
-    let url = upstream_ontologist::vcs::fixup_git_url(location);
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    let url = rt.block_on(upstream_ontologist::vcs::fixup_git_url(location));
     let location = upstream_ontologist::vcs::VcsLocation {
         url: url.parse().unwrap(),
         branch: branch.map(|s| s.to_string()),
         subpath: subpath.map(|s| s.to_string()),
     };
-    let ret = upstream_ontologist::vcs::fixup_git_location(&location);
+    let ret = rt.block_on(upstream_ontologist::vcs::fixup_git_location(&location));
     (
         ret.url.to_string(),
         ret.branch.as_ref().map(|s| s.to_string()),
@@ -422,7 +432,8 @@ impl UpstreamMetadata {
 
 #[pyfunction]
 fn check_upstream_metadata(metadata: &mut UpstreamMetadata) -> PyResult<()> {
-    upstream_ontologist::check_upstream_metadata(&mut metadata.0, None);
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(upstream_ontologist::check_upstream_metadata(&mut metadata.0, None));
     Ok(())
 }
 
@@ -439,13 +450,14 @@ fn extend_upstream_metadata(
         .map(|s| s.parse())
         .transpose()
         .map_err(|e: String| PyValueError::new_err(format!("Invalid minimum_certainty: {}", e)))?;
-    upstream_ontologist::extend_upstream_metadata(
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(upstream_ontologist::extend_upstream_metadata(
         &mut metadata.0,
         path.as_path(),
         minimum_certainty,
         net_access,
         consult_external_directory,
-    )?;
+    ))?;
     Ok(())
 }
 
@@ -458,15 +470,16 @@ fn guess_upstream_metadata(
     consult_external_directory: Option<bool>,
     check: Option<bool>,
 ) -> PyResult<UpstreamMetadata> {
-    Ok(UpstreamMetadata(
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    Ok(UpstreamMetadata(rt.block_on(
         upstream_ontologist::guess_upstream_metadata(
             path.as_path(),
             trust_package,
             net_access,
             consult_external_directory,
             check,
-        )?,
-    ))
+        ),
+    )?))
 }
 
 #[pyfunction]
@@ -477,26 +490,31 @@ fn guess_upstream_metadata_items(
     trust_package: Option<bool>,
     minimum_certainty: Option<String>,
 ) -> PyResult<Vec<PyObject>> {
-    let metadata = upstream_ontologist::guess_upstream_metadata_items(
-        path.as_path(),
-        trust_package,
-        minimum_certainty
-            .map(|s| s.parse())
-            .transpose()
-            .map_err(|e: String| {
-                PyValueError::new_err(format!("Invalid minimum_certainty: {}", e))
-            })?,
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    let metadata = rt.block_on(
+        upstream_ontologist::guess_upstream_metadata_items(
+            path.as_path(),
+            trust_package,
+            minimum_certainty
+                .map(|s| s.parse())
+                .transpose()
+                .map_err(|e: String| {
+                    PyValueError::new_err(format!("Invalid minimum_certainty: {}", e))
+                })?,
+        )
+        .collect::<Vec<_>>(),
     );
     Ok(metadata
         .into_iter()
-        .map(|datum| datum.map(|o| o.to_object(py)))
-        .filter_map(Result::ok)
+        .filter_map(|datum| datum.ok())
+        .map(|datum| datum.to_object(py))
         .collect::<Vec<PyObject>>())
 }
 
 #[pyfunction]
 fn fix_upstream_metadata(metadata: &mut UpstreamMetadata) -> PyResult<()> {
-    upstream_ontologist::fix_upstream_metadata(&mut metadata.0);
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(upstream_ontologist::fix_upstream_metadata(&mut metadata.0));
     Ok(())
 }
 
