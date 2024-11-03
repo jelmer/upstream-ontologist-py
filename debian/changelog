@@ -1,4 +1,4 @@
-python-upstream-ontologist (0.2.0-1) UNRELEASED; urgency=medium
+python-upstream-ontologist (0.2.0-1) unstable; urgency=medium
 
   * Rename source package to python-upstream-ontologist.
   * The rust code is now built as a separate package, rust-upstream-ontologist
