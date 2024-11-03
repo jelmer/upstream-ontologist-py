@@ -1,0 +1,89 @@
+Source: python-upstream-ontologist
+Rules-Requires-Root: no
+Standards-Version: 4.6.2
+Build-Depends: debhelper-compat (= 13),
+               dh-python,
+               librust-breezyshim-dev,
+               librust-clap-dev,
+               librust-configparser-dev,
+               librust-debcargo-dev,
+               librust-debbugs-dev,
+               librust-debian-changelog-dev,
+               librust-debian-control-dev,
+               librust-debian-copyright-dev,
+               librust-debian-watch-dev,
+               librust-distro-info-dev,
+               librust-html5ever-dev,
+               librust-log-dev,
+               librust-mailparse-dev,
+               librust-makefile-lossless-dev,
+               librust-opam-file-rs-dev,
+               librust-pyo3-dev,
+               librust-pyo3-log-dev,
+               librust-pretty-assertions-dev,
+               librust-pulldown-cmark-dev,
+               librust-pyproject-toml-dev,
+               librust-python-pkginfo-dev,
+               librust-reqwest-dev,
+               librust-rust-ini-dev,
+               librust-rst-parser-dev (>= 0.4.0-3),
+               librust-rst-renderer-dev,
+               librust-select-dev,
+               librust-serde-yaml-dev,
+               librust-scraper-dev,
+               perl-doc,
+               python3-all,
+               python3-breezy,
+               python3-bs4,
+               python3-debian,
+               python3-debmutate,
+               python3-distro-info,
+               python3-docutils,
+               python3-dulwich,
+               python3-lxml,
+               python3-markdown,
+               python3-ruamel.yaml,
+               python3-setuptools,
+               python3-setuptools-rust,
+               python3-toml
+Priority: optional
+Section: python
+Homepage: https://github.com/jelmer/upstream-ontologist-py
+Maintainer: Jelmer Vernooĳ <jelmer@debian.org>
+Vcs-Git: https://salsa.debian.org/python-team/upstream-ontologist-py.git
+Vcs-Browser: https://salsa.debian.org/python-team/upstream-ontologist-py
+
+Package: python3-upstream-ontologist
+Architecture: any
+Replaces: lintian-brush (<< 0.95)
+Depends: python3-breezy,
+         python3-debian,
+         python3-debmutate,
+         python3-ruamel.yaml,
+         ${misc:Depends},
+         ${python3:Depends},
+         ${shlibs:Depends}
+Recommends: perl-doc,
+            python3-bs4,
+            python3-distro-info,
+            python3-docutils,
+            python3-dulwich,
+            python3-lxml,
+            python3-markdown,
+            python3-setuptools,
+            python3-toml,
+            python3-tomlkit
+Description: discover metadata about upstream projects
+ The upstream ontologist discovers metadata about the upstream part of a
+ package by reading common project metadata files. It currently supports:
+ .
+  * setup.py/PKG-INFO files
+  * package.json files
+  * package.xml files
+  * dist.ini files
+  * META.json / META.yml files
+  * GNU configure files
+  * R DESCRIPTION files
+  * pom.xml files
+  * Cargo.toml files
+  * and other formats
