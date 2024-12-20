@@ -1,4 +1,4 @@
-python-upstream-ontologist (0.2.2-2) UNRELEASED; urgency=medium
+python-upstream-ontologist (0.2.2-2) unstable; urgency=medium
 
   * Merge release 0.2.2.
     + Fixes build. Closes: #1088444
