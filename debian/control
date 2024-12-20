@@ -12,6 +12,7 @@ Build-Depends: debhelper-compat (= 13),
                librust-serde-json-dev,
                librust-log-dev,
                python3-all,
+               python3-ruamel.yaml,
                python3-setuptools,
                python3-setuptools-rust
 Priority: optional
