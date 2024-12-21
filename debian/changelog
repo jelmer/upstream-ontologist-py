@@ -1,3 +1,10 @@
+python-upstream-ontologist (0.2.2-3) UNRELEASED; urgency=medium
+
+  * Depend on newer version of librust-makefile-parser-dev that fixes
+    #1076245
+
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Sat, 21 Dec 2024 12:31:59 +0000
+
 python-upstream-ontologist (0.2.2-2) unstable; urgency=medium
 
   * Merge release 0.2.2.

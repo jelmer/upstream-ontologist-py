@@ -3,6 +3,7 @@ Rules-Requires-Root: no
 Standards-Version: 4.6.2
 Build-Depends: debhelper-compat (= 13),
                dh-python,
+               librust-makefile-parser-dev (>= 0.1.7),
                librust-pyo3-dev,
                librust-pyo3-log-dev,
                librust-reqwest+blocking-dev,
