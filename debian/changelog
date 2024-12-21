@@ -1,4 +1,4 @@
-python-upstream-ontologist (0.2.2-3) UNRELEASED; urgency=medium
+python-upstream-ontologist (0.2.2-3) unstable; urgency=medium
 
   * Depend on newer version of librust-makefile-parser-dev that fixes
     #1076245
