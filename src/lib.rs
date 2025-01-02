@@ -166,6 +166,9 @@ impl UpstreamDatum {
                     "Security-MD" => upstream_ontologist::UpstreamDatum::SecurityMD(
                         extract_str_value(py, value)?,
                     ),
+                    "Security-Contact" => upstream_ontologist::UpstreamDatum::SecurityContact(
+                        extract_str_value(py, value)?,
+                    ),
                     "Keywords" => {
                         upstream_ontologist::UpstreamDatum::Keywords(value.extract(py).unwrap())
                     }
