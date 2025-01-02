@@ -431,9 +431,13 @@ impl UpstreamMetadata {
 }
 
 #[pyfunction]
-fn check_upstream_metadata(metadata: &mut UpstreamMetadata) -> PyResult<()> {
+#[pyo3(signature = (metadata, version=None))]
+fn check_upstream_metadata(metadata: &mut UpstreamMetadata, version: Option<&str>) -> PyResult<()> {
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(upstream_ontologist::check_upstream_metadata(&mut metadata.0, None));
+    rt.block_on(upstream_ontologist::check_upstream_metadata(
+        &mut metadata.0,
+        version,
+    ));
     Ok(())
 }
 
