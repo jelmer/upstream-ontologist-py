@@ -1,7 +1,7 @@
 ---
 name: Build Python Wheels
 
-on:
+"on":
   push:
   pull_request:
   schedule:
@@ -19,7 +19,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
       - name: Install native dependencies (Ubuntu)
-        run: sudo apt-get update && sudo apt-get install -y libgpgme-dev libgpg-error-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgpgme-dev libgpg-error-dev
         if: "matrix.os == 'ubuntu-latest'"
       - name: set up rust
         if: matrix.os != 'ubuntu'
