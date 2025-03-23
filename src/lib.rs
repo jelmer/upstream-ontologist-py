@@ -230,6 +230,7 @@ impl UpstreamDatum {
                     "Webservice" => {
                         upstream_ontologist::UpstreamDatum::Webservice(value.extract(py).unwrap())
                     }
+                    "FAQ" => upstream_ontologist::UpstreamDatum::FAQ(value.extract(py).unwrap()),
                     _ => {
                         return Err(PyValueError::new_err(format!("Unknown field: {}", field)));
                     }
