@@ -3406,9 +3406,9 @@ dependencies = [
 
 [[package]]
 name = "makefile-lossless"
-version = "0.1.7"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85fd6456fd1895499a2cd26302eff80855631c6c7f6a3af2a29d71eb45c3098e"
+checksum = "07ea491a96d7e6a435fa6723adfd304918c2569ac62e5d0ae506a0037f5beecb"
 dependencies = [
  "log",
  "rowan 0.16.1",
@@ -5647,9 +5647,9 @@ dependencies = [
 
 [[package]]
 name = "upstream-ontologist"
-version = "0.2.3"
+version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77bc0330f1520257086aa3208900ff8543291b7f5a65fa6eb80275f388b9ab29"
+checksum = "d84951162c78bb316161554813c14455ae58f58ec202bab3d4dc8b95c14da65f"
 dependencies = [
  "async-trait",
  "breezyshim",
