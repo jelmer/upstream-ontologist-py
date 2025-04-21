@@ -45,9 +45,6 @@ readme = [
 testing = ["breezy>=3.3.0"]
 dev = ["ruff==0.11.6"]
 
-[project.scripts]
-guess-upstream-metadata = "upstream_ontologist.__main__:main"
-
 [tool.setuptools]
 include-package-data = false
 
