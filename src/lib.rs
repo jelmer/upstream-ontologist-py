@@ -1,3 +1,5 @@
+// pyo3 macros use a gil-refs feature
+#![allow(unexpected_cfgs)]
 use futures::StreamExt;
 use pyo3::exceptions::{PyKeyError, PyRuntimeError, PyStopIteration, PyValueError};
 use pyo3::import_exception;
