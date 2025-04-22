@@ -1,4 +1,4 @@
-python-upstream-ontologist (0.2.4-1) UNRELEASED; urgency=medium
+python-upstream-ontologist (0.2.4-1) unstable; urgency=medium
 
   * New upstream release.
    + Stops shipping of broken ``guess-upstream-metadata``. Closes: #1103799
