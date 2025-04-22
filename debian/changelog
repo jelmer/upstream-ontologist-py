@@ -1,3 +1,10 @@
+python-upstream-ontologist (0.2.4-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+   + Stops shipping of broken ``guess-upstream-metadata``. Closes: #1103799
+
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Wed, 23 Apr 2025 00:16:54 +0100
+
 python-upstream-ontologist (0.2.2-3) unstable; urgency=medium
 
   * Depend on newer version of librust-makefile-parser-dev that fixes
