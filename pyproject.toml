@@ -43,10 +43,7 @@ readme = [
 ]
 "setup.cfg" = ["setuptools"]
 testing = ["breezy>=3.3.0"]
-dev = ["ruff==0.8.3"]
-
-[project.scripts]
-guess-upstream-metadata = "upstream_ontologist.__main__:main"
+dev = ["ruff==0.11.6"]
 
 [tool.setuptools]
 include-package-data = false
@@ -66,8 +63,6 @@ ignore = [
     "ANN001",
     "ANN002",
     "ANN003",
-    "ANN101",  # missing-type-self
-    "ANN102",
     "ANN201",
     "ANN202",
     "ANN204",
@@ -105,7 +100,7 @@ environment = {PATH="$HOME/.cargo/bin:$PATH"}
 skip = "pp*-* *musllinux*"
 
 [tool.cibuildwheel.linux]
-before-build = "if command -v yum; then yum -y install openssl-devel; fi && if command -v apk; then apk add openssl-dev pkgconfig; fi && pip install -U setuptools-rust && curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=stable --profile=minimal -y && rustup show"
+before-build = "if command -v yum; then yum -y install libatomic openssl-devel; fi && if command -v apk; then apk add openssl-dev pkgconfig; fi && pip install -U setuptools-rust && curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=stable --profile=minimal -y && rustup show"
 
 [tool.cibuildwheel.macos]
 macos = "x86_64 arm64 universal2"

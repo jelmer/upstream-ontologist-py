@@ -1,3 +1,5 @@
+// pyo3 macros use a gil-refs feature
+#![allow(unexpected_cfgs)]
 use futures::StreamExt;
 use pyo3::exceptions::{PyKeyError, PyRuntimeError, PyStopIteration, PyValueError};
 use pyo3::import_exception;
@@ -166,6 +168,9 @@ impl UpstreamDatum {
                     "Security-MD" => upstream_ontologist::UpstreamDatum::SecurityMD(
                         extract_str_value(py, value)?,
                     ),
+                    "Security-Contact" => upstream_ontologist::UpstreamDatum::SecurityContact(
+                        extract_str_value(py, value)?,
+                    ),
                     "Keywords" => {
                         upstream_ontologist::UpstreamDatum::Keywords(value.extract(py).unwrap())
                     }
@@ -227,6 +232,7 @@ impl UpstreamDatum {
                     "Webservice" => {
                         upstream_ontologist::UpstreamDatum::Webservice(value.extract(py).unwrap())
                     }
+                    "FAQ" => upstream_ontologist::UpstreamDatum::FAQ(value.extract(py).unwrap()),
                     _ => {
                         return Err(PyValueError::new_err(format!("Unknown field: {}", field)));
                     }
@@ -431,9 +437,13 @@ impl UpstreamMetadata {
 }
 
 #[pyfunction]
-fn check_upstream_metadata(metadata: &mut UpstreamMetadata) -> PyResult<()> {
+#[pyo3(signature = (metadata, version=None))]
+fn check_upstream_metadata(metadata: &mut UpstreamMetadata, version: Option<&str>) -> PyResult<()> {
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(upstream_ontologist::check_upstream_metadata(&mut metadata.0, None));
+    rt.block_on(upstream_ontologist::check_upstream_metadata(
+        &mut metadata.0,
+        version,
+    ));
     Ok(())
 }
 
