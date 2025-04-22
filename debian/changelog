@@ -2,6 +2,8 @@ python-upstream-ontologist (0.2.4-1) UNRELEASED; urgency=medium
 
   * New upstream release.
    + Stops shipping of broken ``guess-upstream-metadata``. Closes: #1103799
+  * debian/watch: Use python-upstream-ontologist rather than upstream-
+    ontologist repo.
 
  -- Jelmer Vernooĳ <jelmer@debian.org>  Wed, 23 Apr 2025 00:16:54 +0100
 
