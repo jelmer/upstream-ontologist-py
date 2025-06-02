@@ -253,8 +253,9 @@ impl UpstreamDatum {
         let value = self
             .0
             .datum
-            .to_object(py)
-            .extract::<(String, PyObject)>(py)
+            .into_pyobject(py)
+            .unwrap()
+            .extract::<(String, PyObject)>()
             .unwrap()
             .1;
         assert!(!value.bind(py).is_instance_of::<PyTuple>());
@@ -356,10 +357,12 @@ impl UpstreamMetadata {
     #[pyo3(signature = (field, default=None))]
     pub fn get(&self, py: Python, field: &str, default: Option<PyObject>) -> PyObject {
         let default = default.unwrap_or_else(|| py.None());
-        let value = self
-            .0
-            .get(field)
-            .map(|datum| UpstreamDatum(datum.clone()).into_py(py));
+        let value = self.0.get(field).map(|datum| {
+            UpstreamDatum(datum.clone())
+                .into_pyobject(py)
+                .unwrap()
+                .into()
+        });
 
         value.unwrap_or(default)
     }
@@ -396,7 +399,7 @@ impl UpstreamMetadata {
         let mut data = Vec::new();
         let di = d.iter();
         for t in di {
-            let t = t.to_object(py);
+            let t: PyObject = t.into_pyobject(py).unwrap().into();
             let mut datum: upstream_ontologist::UpstreamDatumWithMetadata =
                 if let Ok(wm) = t.extract(py) {
                     wm
@@ -432,7 +435,9 @@ impl UpstreamMetadata {
         Ok(UpstreamDatumIter {
             inner: slf.0.iter().cloned().collect::<Vec<_>>(),
         }
-        .into_py(slf.py()))
+        .into_pyobject(slf.py())
+        .unwrap()
+        .into())
     }
 }
 
@@ -517,7 +522,7 @@ fn guess_upstream_metadata_items(
     Ok(metadata
         .into_iter()
         .filter_map(|datum| datum.ok())
-        .map(|datum| datum.to_object(py))
+        .map(|datum| datum.into_pyobject(py).unwrap().into())
         .collect::<Vec<PyObject>>())
 }
 
