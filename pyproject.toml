@@ -43,7 +43,7 @@ readme = [
 ]
 "setup.cfg" = ["setuptools"]
 testing = ["breezy>=3.3.0"]
-dev = ["ruff==0.12.1"]
+dev = ["ruff==0.12.2"]
 
 [tool.setuptools]
 include-package-data = false
