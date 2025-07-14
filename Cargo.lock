@@ -286,9 +286,9 @@ checksum = "66bb12751a83493ef4b8da1120451a262554e216a247f14b48cb5e8fe7ed8bdf"
 
 [[package]]
 name = "breezyshim"
-version = "0.5.6"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "17bbc502c3444ac819d7a5f82a54d4663a3690ca4e2c3d7baa36a17e7d951b44"
+checksum = "9065928e4632fabbaba71de5ea32680785f97c2d40e5de8e7a0a696fb5a951e2"
 dependencies = [
  "chrono",
  "ctor",
@@ -5777,9 +5777,9 @@ dependencies = [
 
 [[package]]
 name = "upstream-ontologist"
-version = "0.2.9"
+version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0df0b75d73e3f6185447d06ad01a024ed7b4cc0d385962fd13e44b45bfb6b001"
+checksum = "01f77651d20345e54e1655532e5d5dd7cef65b0c42a7aa6be9f651bf67f90429"
 dependencies = [
  "async-trait",
  "breezyshim",
