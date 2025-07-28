@@ -41,7 +41,6 @@ Recommends: perl-doc,
             python3-lxml,
             python3-markdown,
             python3-setuptools,
-            python3-toml,
             python3-tomlkit
 Description: discover metadata about upstream projects
  The upstream ontologist discovers metadata about the upstream part of a
