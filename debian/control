@@ -20,8 +20,8 @@ Priority: optional
 Section: python
 Homepage: https://github.com/jelmer/upstream-ontologist-py
 Maintainer: Jelmer Vernooĳ <jelmer@debian.org>
-Vcs-Git: https://salsa.debian.org/python-team/upstream-ontologist-py.git
-Vcs-Browser: https://salsa.debian.org/python-team/upstream-ontologist-py
+Vcs-Git: https://salsa.debian.org/python-team/packages/upstream-ontologist-py.git
+Vcs-Browser: https://salsa.debian.org/python-team/packages/upstream-ontologist-py
 
 Package: python3-upstream-ontologist
 Architecture: any
