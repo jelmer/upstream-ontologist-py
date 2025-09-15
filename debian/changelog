@@ -1,9 +1,9 @@
-python-upstream-ontologist (0.2.6-1) UNRELEASED; urgency=medium
+python-upstream-ontologist (0.2.6-1) unstable; urgency=medium
 
   * New upstream release.
    + Fixes FTBFS. Closes: #1114336
 
- -- Jelmer Vernooĳ <jelmer@debian.org>  Mon, 15 Sep 2025 12:20:01 +0100
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Mon, 15 Sep 2025 12:41:22 +0100
 
 python-upstream-ontologist (0.2.4-2) unstable; urgency=medium
 
