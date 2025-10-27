@@ -55,7 +55,6 @@ Supported, but currently not set.
 
 from dataclasses import dataclass
 from email.utils import parseaddr
-from typing import Optional
 
 import ruamel.yaml
 
@@ -79,8 +78,8 @@ class Person:
     yaml_tag = "!Person"
 
     name: str
-    email: Optional[str] = None
-    url: Optional[str] = None
+    email: str | None = None
+    url: str | None = None
 
     def __init__(self, name, email=None, url=None):
         self.name = name
