@@ -13,7 +13,7 @@ name = "upstream-ontologist"
 authors = [{name = "Jelmer Vernooij", email = "jelmer@jelmer.uk"}]
 maintainers = [{name = "Jelmer Vernooij", email = "jelmer@jelmer.uk"}]
 description = "tracking of upstream project metadata"
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 dependencies = [
     "python_debian",
     "ruamel.yaml",
@@ -43,7 +43,7 @@ readme = [
 ]
 "setup.cfg" = ["setuptools"]
 testing = ["breezy>=3.3.0"]
-dev = ["ruff==0.12.8"]
+dev = ["ruff==0.14.3"]
 
 [tool.setuptools]
 include-package-data = false
@@ -105,7 +105,7 @@ before-build = "if command -v yum; then yum -y install libatomic openssl-devel; 
 [tool.cibuildwheel.macos]
 macos = "x86_64 arm64 universal2"
 before-build = "brew install openssl && pip install -U setuptools-rust && curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=stable --profile=minimal -y && rustup show"
-environment = {MACOSX_DEPLOYMENT_TARGET=14.0}
+environment = {MACOSX_DEPLOYMENT_TARGET=15.0}
 
 [[tool.cibuildwheel.overrides]]
 select = "*-macosx_arm64"

@@ -6,10 +6,24 @@ use pyo3::import_exception;
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyTuple, PyType};
 use std::str::FromStr;
+use std::sync::OnceLock;
 use upstream_ontologist::{Certainty, Origin};
 use url::Url;
 
 import_exception!(urllib.error, HTTPError);
+
+// Global Tokio runtime that's initialized once and reused
+static RUNTIME: OnceLock<tokio::runtime::Runtime> = OnceLock::new();
+
+fn get_runtime() -> &'static tokio::runtime::Runtime {
+    RUNTIME.get_or_init(|| {
+        tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(2)
+            .enable_all()
+            .build()
+            .expect("Failed to create Tokio runtime")
+    })
+}
 
 #[pyfunction]
 fn drop_vcs_in_scheme(url: &str) -> String {
@@ -22,7 +36,7 @@ fn drop_vcs_in_scheme(url: &str) -> String {
 fn canonical_git_repo_url(url: &str, net_access: Option<bool>) -> PyResult<String> {
     let url =
         Url::parse(url).map_err(|e| PyRuntimeError::new_err(format!("Invalid URL: {}", e)))?;
-    let rt = tokio::runtime::Runtime::new().unwrap();
+    let rt = get_runtime();
     Ok(rt
         .block_on(upstream_ontologist::vcs::canonical_git_repo_url(
             &url, net_access,
@@ -33,14 +47,14 @@ fn canonical_git_repo_url(url: &str, net_access: Option<bool>) -> PyResult<Strin
 #[pyfunction]
 #[pyo3(signature = (url, net_access=None))]
 fn find_public_repo_url(url: &str, net_access: Option<bool>) -> PyResult<Option<String>> {
-    let rt = tokio::runtime::Runtime::new().unwrap();
+    let rt = get_runtime();
     Ok(rt.block_on(upstream_ontologist::vcs::find_public_repo_url(
         url, net_access,
     )))
 }
 
 #[pyfunction]
-fn known_bad_guess(py: Python, datum: PyObject) -> PyResult<bool> {
+fn known_bad_guess(py: Python, datum: Py<PyAny>) -> PyResult<bool> {
     let datum: upstream_ontologist::UpstreamDatum = datum.extract(py)?;
     Ok(datum.known_bad_guess())
 }
@@ -58,7 +72,7 @@ pub fn find_secure_repo_url(
     branch: Option<&str>,
     net_access: Option<bool>,
 ) -> Option<String> {
-    let rt = tokio::runtime::Runtime::new().unwrap();
+    let rt = get_runtime();
     rt.block_on(upstream_ontologist::vcs::find_secure_repo_url(
         url.parse().unwrap(),
         branch,
@@ -80,7 +94,7 @@ fn fixup_broken_git_details(
     branch: Option<&str>,
     subpath: Option<&str>,
 ) -> (String, Option<String>, Option<String>) {
-    let rt = tokio::runtime::Runtime::new().unwrap();
+    let rt = get_runtime();
     let url = rt.block_on(upstream_ontologist::vcs::fixup_git_url(location));
     let location = upstream_ontologist::vcs::VcsLocation {
         url: url.parse().unwrap(),
@@ -95,8 +109,8 @@ fn fixup_broken_git_details(
     )
 }
 
-fn extract_str_value(py: Python, value: PyObject) -> PyResult<String> {
-    let value = value.extract::<PyObject>(py)?;
+fn extract_str_value(py: Python, value: Py<PyAny>) -> PyResult<String> {
+    let value = value.extract::<Py<PyAny>>(py)?;
 
     value.extract::<String>(py)
 }
@@ -112,7 +126,7 @@ impl UpstreamDatum {
     fn new(
         py: Python,
         field: String,
-        value: PyObject,
+        value: Py<PyAny>,
         certainty: Option<String>,
         origin: Option<Origin>,
     ) -> PyResult<Self> {
@@ -249,13 +263,13 @@ impl UpstreamDatum {
     }
 
     #[getter]
-    fn value(&self, py: Python) -> PyResult<PyObject> {
+    fn value(&self, py: Python) -> PyResult<Py<PyAny>> {
         let value = self
             .0
             .datum
             .into_pyobject(py)
             .unwrap()
-            .extract::<(String, PyObject)>()
+            .extract::<(String, Py<PyAny>)>()
             .unwrap()
             .1;
         assert!(!value.bind(py).is_instance_of::<PyTuple>());
@@ -355,7 +369,7 @@ impl UpstreamMetadata {
     }
 
     #[pyo3(signature = (field, default=None))]
-    pub fn get(&self, py: Python, field: &str, default: Option<PyObject>) -> PyObject {
+    pub fn get(&self, py: Python, field: &str, default: Option<Py<PyAny>>) -> PyObject {
         let default = default.unwrap_or_else(|| py.None());
         let value = self.0.get(field).map(|datum| {
             UpstreamDatum(datum.clone())
@@ -399,7 +413,7 @@ impl UpstreamMetadata {
         let mut data = Vec::new();
         let di = d.iter();
         for t in di {
-            let t: PyObject = t.into_pyobject(py).unwrap().into();
+            let t: Py<PyAny> = t.into_pyobject(py).unwrap().into();
             let mut datum: upstream_ontologist::UpstreamDatumWithMetadata =
                 if let Ok(wm) = t.extract(py) {
                     wm
@@ -421,7 +435,7 @@ impl UpstreamMetadata {
         Ok(Self(upstream_ontologist::UpstreamMetadata::from_data(data)))
     }
 
-    pub fn __iter__(slf: PyRef<Self>) -> PyResult<PyObject> {
+    pub fn __iter__(slf: PyRef<Self>) -> PyResult<Py<PyAny>> {
         #[pyclass]
         struct UpstreamDatumIter {
             inner: Vec<upstream_ontologist::UpstreamDatumWithMetadata>,
@@ -444,7 +458,7 @@ impl UpstreamMetadata {
 #[pyfunction]
 #[pyo3(signature = (metadata, version=None))]
 fn check_upstream_metadata(metadata: &mut UpstreamMetadata, version: Option<&str>) -> PyResult<()> {
-    let rt = tokio::runtime::Runtime::new().unwrap();
+    let rt = get_runtime();
     rt.block_on(upstream_ontologist::check_upstream_metadata(
         &mut metadata.0,
         version,
@@ -465,7 +479,7 @@ fn extend_upstream_metadata(
         .map(|s| s.parse())
         .transpose()
         .map_err(|e: String| PyValueError::new_err(format!("Invalid minimum_certainty: {}", e)))?;
-    let rt = tokio::runtime::Runtime::new().unwrap();
+    let rt = get_runtime();
     rt.block_on(upstream_ontologist::extend_upstream_metadata(
         &mut metadata.0,
         path.as_path(),
@@ -485,7 +499,7 @@ fn guess_upstream_metadata(
     consult_external_directory: Option<bool>,
     check: Option<bool>,
 ) -> PyResult<UpstreamMetadata> {
-    let rt = tokio::runtime::Runtime::new().unwrap();
+    let rt = get_runtime();
     Ok(UpstreamMetadata(rt.block_on(
         upstream_ontologist::guess_upstream_metadata(
             path.as_path(),
@@ -504,8 +518,8 @@ fn guess_upstream_metadata_items(
     path: std::path::PathBuf,
     trust_package: Option<bool>,
     minimum_certainty: Option<String>,
-) -> PyResult<Vec<PyObject>> {
-    let rt = tokio::runtime::Runtime::new().unwrap();
+) -> PyResult<Vec<Py<PyAny>>> {
+    let rt = get_runtime();
     let metadata = rt.block_on(
         upstream_ontologist::guess_upstream_metadata_items(
             path.as_path(),
@@ -523,12 +537,12 @@ fn guess_upstream_metadata_items(
         .into_iter()
         .filter_map(|datum| datum.ok())
         .map(|datum| datum.into_pyobject(py).unwrap().into())
-        .collect::<Vec<PyObject>>())
+        .collect::<Vec<Py<PyAny>>>())
 }
 
 #[pyfunction]
 fn fix_upstream_metadata(metadata: &mut UpstreamMetadata) -> PyResult<()> {
-    let rt = tokio::runtime::Runtime::new().unwrap();
+    let rt = get_runtime();
     rt.block_on(upstream_ontologist::fix_upstream_metadata(&mut metadata.0));
     Ok(())
 }
@@ -537,7 +551,7 @@ fn fix_upstream_metadata(metadata: &mut UpstreamMetadata) -> PyResult<()> {
 fn update_from_guesses(
     py: Python,
     metadata: &mut UpstreamMetadata,
-    items_iter: PyObject,
+    items_iter: Py<PyAny>,
 ) -> PyResult<Vec<UpstreamDatum>> {
     let mut items = vec![];
     loop {

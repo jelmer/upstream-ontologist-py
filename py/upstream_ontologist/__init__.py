@@ -55,7 +55,6 @@ Supported, but currently not set.
 
 from dataclasses import dataclass
 from email.utils import parseaddr
-from typing import Optional
 
 import ruamel.yaml
 
@@ -63,7 +62,7 @@ from . import _upstream_ontologist
 
 SUPPORTED_CERTAINTIES = ["certain", "confident", "likely", "possible", None]
 
-version_string = "0.2.2"
+version_string = "0.2.7"
 
 USER_AGENT = "upstream-ontologist/" + version_string
 # Too aggressive?
@@ -79,8 +78,8 @@ class Person:
     yaml_tag = "!Person"
 
     name: str
-    email: Optional[str] = None
-    url: Optional[str] = None
+    email: str | None = None
+    url: str | None = None
 
     def __init__(self, name, email=None, url=None):
         self.name = name
