@@ -1,3 +1,9 @@
+python-upstream-ontologist (0.2.7-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Tue, 04 Nov 2025 20:40:41 +0000
+
 python-upstream-ontologist (0.2.6-1) unstable; urgency=medium
 
   * New upstream release.
