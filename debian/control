@@ -20,7 +20,6 @@ Build-Depends: debhelper-compat (= 13),
                librust-url-2+default-dev (>= 2.5-~~),
                libstd-rust-dev,
                python3-all,
-               python3-ruamel.yaml,
                python3-setuptools,
                python3-setuptools-rust,
                rustc:native
@@ -33,23 +32,9 @@ Vcs-Browser: https://salsa.debian.org/python-team/packages/upstream-ontologist-p
 
 Package: python3-upstream-ontologist
 Architecture: any
-Replaces: lintian-brush (<< 0.95)
-Depends: python3-breezy,
-         python3-debian,
-         python3-debmutate,
-         python3-ruamel.yaml,
-         ${misc:Depends},
+Depends: ${misc:Depends},
          ${python3:Depends},
          ${shlibs:Depends}
-Recommends: perl-doc,
-            python3-bs4,
-            python3-distro-info,
-            python3-docutils,
-            python3-dulwich,
-            python3-lxml,
-            python3-markdown,
-            python3-setuptools,
-            python3-tomlkit
 Description: discover metadata about upstream projects
  The upstream ontologist discovers metadata about the upstream part of a
  package by reading common project metadata files. It currently supports:
