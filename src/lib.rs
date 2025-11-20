@@ -15,6 +15,9 @@ import_exception!(urllib.error, HTTPError);
 // Global Tokio runtime that's initialized once and reused
 static RUNTIME: OnceLock<tokio::runtime::Runtime> = OnceLock::new();
 
+/// Gets or initializes the global Tokio runtime for async operations.
+///
+/// Returns a reference to a static Tokio runtime with 2 worker threads.
 fn get_runtime() -> &'static tokio::runtime::Runtime {
     RUNTIME.get_or_init(|| {
         tokio::runtime::Builder::new_multi_thread()
@@ -25,12 +28,36 @@ fn get_runtime() -> &'static tokio::runtime::Runtime {
     })
 }
 
+/// Removes VCS-specific prefixes from URL schemes.
+///
+/// Converts URLs like "git+https://..." to "https://...".
+///
+/// Args:
+///     url: The URL string to process.
+///
+/// Returns:
+///     The URL with VCS prefixes removed from the scheme.
 #[pyfunction]
 fn drop_vcs_in_scheme(url: &str) -> String {
     upstream_ontologist::vcs::drop_vcs_in_scheme(&url.parse().unwrap())
         .map_or_else(|| url.to_string(), |u| u.to_string())
 }
 
+/// Converts a Git repository URL to its canonical form.
+///
+/// This function normalizes Git URLs by resolving redirects and applying
+/// standard transformations to get the canonical repository location.
+///
+/// Args:
+///     url: The Git repository URL to canonicalize.
+///     net_access: Whether to allow network access for checking redirects.
+///                 If None, network access is allowed by default.
+///
+/// Returns:
+///     The canonical URL string.
+///
+/// Raises:
+///     RuntimeError: If the URL is invalid.
 #[pyfunction]
 #[pyo3(signature = (url, net_access=None))]
 fn canonical_git_repo_url(url: &str, net_access: Option<bool>) -> PyResult<String> {
@@ -44,6 +71,17 @@ fn canonical_git_repo_url(url: &str, net_access: Option<bool>) -> PyResult<Strin
         .map_or_else(|| url.to_string(), |u| u.to_string()))
 }
 
+/// Attempts to find a public repository URL from a given URL.
+///
+/// This function tries to convert private or internal repository URLs
+/// to their public equivalents.
+///
+/// Args:
+///     url: The repository URL to convert.
+///     net_access: Whether to allow network access for verification.
+///
+/// Returns:
+///     The public repository URL if found, None otherwise.
 #[pyfunction]
 #[pyo3(signature = (url, net_access=None))]
 fn find_public_repo_url(url: &str, net_access: Option<bool>) -> PyResult<Option<String>> {
@@ -53,18 +91,48 @@ fn find_public_repo_url(url: &str, net_access: Option<bool>) -> PyResult<Option<
     )))
 }
 
+/// Checks if an upstream datum is a known bad guess.
+///
+/// Some metadata values are known to be incorrect or low-quality guesses
+/// that should be filtered out.
+///
+/// Args:
+///     datum: The UpstreamDatum to check.
+///
+/// Returns:
+///     True if the datum is known to be a bad guess, False otherwise.
 #[pyfunction]
 fn known_bad_guess(py: Python, datum: Py<PyAny>) -> PyResult<bool> {
     let datum: upstream_ontologist::UpstreamDatum = datum.extract(py)?;
     Ok(datum.known_bad_guess())
 }
 
+/// Converts RCP-style Git URLs to standard format.
+///
+/// Transforms URLs in the format "user@host:path" to "ssh://user@host/path".
+///
+/// Args:
+///     url: The Git URL to fix up.
+///
+/// Returns:
+///     The URL in standard format.
 #[pyfunction]
 fn fixup_rcp_style_git_repo_url(url: &str) -> PyResult<String> {
     Ok(upstream_ontologist::vcs::fixup_rcp_style_git_repo_url(url)
         .map_or(url.to_string(), |u| u.to_string()))
 }
 
+/// Finds a secure (HTTPS) version of a repository URL.
+///
+/// Attempts to convert HTTP URLs to HTTPS when possible.
+///
+/// Args:
+///     url: The repository URL to secure.
+///     branch: Optional branch name to verify.
+///     net_access: Whether to allow network access for verification.
+///
+/// Returns:
+///     The secure URL if found, None otherwise.
 #[pyfunction]
 #[pyo3(signature = (url, branch=None, net_access=None))]
 pub fn find_secure_repo_url(
@@ -81,12 +149,31 @@ pub fn find_secure_repo_url(
     .map(|u| u.to_string())
 }
 
+/// Converts a list of CVS repository URLs to a single string representation.
+///
+/// Args:
+///     urls: List of CVS repository URLs.
+///
+/// Returns:
+///     A string representation of the CVS repository if valid, None otherwise.
 #[pyfunction]
 fn convert_cvs_list_to_str(urls: Vec<String>) -> Option<String> {
     let urls = urls.iter().map(|x| x.as_str()).collect::<Vec<&str>>();
     upstream_ontologist::vcs::convert_cvs_list_to_str(urls.as_slice())
 }
 
+/// Fixes broken or malformed Git repository details.
+///
+/// Attempts to correct common issues with Git repository URLs, branches,
+/// and subpaths.
+///
+/// Args:
+///     location: The Git repository URL.
+///     branch: Optional branch name.
+///     subpath: Optional subpath within the repository.
+///
+/// Returns:
+///     A tuple of (fixed_url, fixed_branch, fixed_subpath).
 #[pyfunction]
 #[pyo3(signature = (location, branch=None, subpath=None))]
 fn fixup_broken_git_details(
@@ -109,18 +196,35 @@ fn fixup_broken_git_details(
     )
 }
 
+/// Extracts a string value from a Python object.
+///
+/// Helper function to convert Python objects to Rust strings.
 fn extract_str_value(py: Python, value: Py<PyAny>) -> PyResult<String> {
     let value = value.extract::<Py<PyAny>>(py)?;
 
     value.extract::<String>(py)
 }
 
+/// A single piece of upstream project metadata with certainty and origin information.
+///
+/// Represents metadata fields like Name, Version, Homepage, Repository, etc.
+/// along with information about how certain we are of the value and where it came from.
 #[derive(Clone)]
 #[pyclass]
 struct UpstreamDatum(pub(crate) upstream_ontologist::UpstreamDatumWithMetadata);
 
 #[pymethods]
 impl UpstreamDatum {
+    /// Creates a new UpstreamDatum.
+    ///
+    /// Args:
+    ///     field: The metadata field name (e.g., "Name", "Version", "Homepage").
+    ///     value: The value for this field.
+    ///     certainty: Optional certainty level (e.g., "certain", "confident", "possible").
+    ///     origin: Optional origin information describing where this datum came from.
+    ///
+    /// Raises:
+    ///     ValueError: If the field name is not recognized.
     #[new]
     #[pyo3(signature = (field, value, certainty=None, origin=None))]
     fn new(
@@ -327,6 +431,10 @@ impl UpstreamDatum {
     }
 }
 
+/// A collection of upstream project metadata.
+///
+/// Stores multiple UpstreamDatum objects representing various metadata fields
+/// for an upstream project. Provides dict-like access to the metadata.
 #[pyclass]
 struct UpstreamMetadata(pub(crate) upstream_ontologist::UpstreamMetadata);
 
@@ -387,6 +495,10 @@ impl UpstreamMetadata {
         Ok(())
     }
 
+    /// Creates a new UpstreamMetadata collection.
+    ///
+    /// Args:
+    ///     **kwargs: Optional keyword arguments of UpstreamDatum objects.
     #[new]
     #[pyo3(signature = (**kwargs))]
     fn new(kwargs: Option<Bound<PyDict>>) -> Self {
@@ -402,6 +514,14 @@ impl UpstreamMetadata {
         ret
     }
 
+    /// Creates an UpstreamMetadata collection from a dictionary.
+    ///
+    /// Args:
+    ///     d: Dictionary containing metadata fields and values.
+    ///     default_certainty: Default certainty level to apply if not specified.
+    ///
+    /// Returns:
+    ///     A new UpstreamMetadata collection.
     #[classmethod]
     #[pyo3(signature = (d, default_certainty=None))]
     pub fn from_dict(
@@ -455,6 +575,13 @@ impl UpstreamMetadata {
     }
 }
 
+/// Validates and checks upstream metadata for correctness.
+///
+/// Performs various checks on the metadata to ensure it's valid and consistent.
+///
+/// Args:
+///     metadata: The UpstreamMetadata to check (modified in place).
+///     version: Optional version string to validate against.
 #[pyfunction]
 #[pyo3(signature = (metadata, version=None))]
 fn check_upstream_metadata(metadata: &mut UpstreamMetadata, version: Option<&str>) -> PyResult<()> {
@@ -466,6 +593,20 @@ fn check_upstream_metadata(metadata: &mut UpstreamMetadata, version: Option<&str
     Ok(())
 }
 
+/// Extends existing upstream metadata by guessing additional fields.
+///
+/// Analyzes the project at the given path and adds any missing metadata
+/// that can be determined with sufficient certainty.
+///
+/// Args:
+///     metadata: The UpstreamMetadata to extend (modified in place).
+///     path: Path to the project directory to analyze.
+///     minimum_certainty: Minimum certainty level required to add metadata.
+///     net_access: Whether to allow network access for gathering metadata.
+///     consult_external_directory: Whether to consult external metadata directories.
+///
+/// Raises:
+///     ValueError: If minimum_certainty is invalid.
 #[pyfunction]
 #[pyo3(signature = (metadata, path, minimum_certainty=None, net_access=None, consult_external_directory=None))]
 fn extend_upstream_metadata(
@@ -490,6 +631,20 @@ fn extend_upstream_metadata(
     Ok(())
 }
 
+/// Guesses upstream metadata by analyzing a project directory.
+///
+/// Examines the project structure, files, and content to infer metadata
+/// such as name, version, homepage, repository, etc.
+///
+/// Args:
+///     path: Path to the project directory to analyze.
+///     trust_package: Whether to trust package metadata files.
+///     net_access: Whether to allow network access for gathering metadata.
+///     consult_external_directory: Whether to consult external metadata directories.
+///     check: Whether to perform validation checks on the gathered metadata.
+///
+/// Returns:
+///     An UpstreamMetadata collection with the guessed metadata.
 #[pyfunction]
 #[pyo3(signature = (path, trust_package=None, net_access=None, consult_external_directory=None, check=None))]
 fn guess_upstream_metadata(
@@ -511,6 +666,21 @@ fn guess_upstream_metadata(
     )?))
 }
 
+/// Guesses upstream metadata and returns items as they are discovered.
+///
+/// Similar to guess_upstream_metadata but returns a list of individual
+/// metadata items rather than a collection.
+///
+/// Args:
+///     path: Path to the project directory to analyze.
+///     trust_package: Whether to trust package metadata files.
+///     minimum_certainty: Minimum certainty level required to include metadata.
+///
+/// Returns:
+///     A list of UpstreamDatum objects.
+///
+/// Raises:
+///     ValueError: If minimum_certainty is invalid.
 #[pyfunction]
 #[pyo3(signature = (path, trust_package=None, minimum_certainty=None))]
 fn guess_upstream_metadata_items(
@@ -540,6 +710,13 @@ fn guess_upstream_metadata_items(
         .collect::<Vec<Py<PyAny>>>())
 }
 
+/// Fixes common issues in upstream metadata.
+///
+/// Applies corrections to metadata values, such as fixing malformed URLs,
+/// normalizing formats, and resolving inconsistencies.
+///
+/// Args:
+///     metadata: The UpstreamMetadata to fix (modified in place).
 #[pyfunction]
 fn fix_upstream_metadata(metadata: &mut UpstreamMetadata) -> PyResult<()> {
     let rt = get_runtime();
@@ -547,6 +724,17 @@ fn fix_upstream_metadata(metadata: &mut UpstreamMetadata) -> PyResult<()> {
     Ok(())
 }
 
+/// Updates metadata from an iterator of guessed items.
+///
+/// Merges guessed metadata items into an existing metadata collection,
+/// preferring more certain values and avoiding duplicates.
+///
+/// Args:
+///     metadata: The UpstreamMetadata to update (modified in place).
+///     items_iter: An iterator of UpstreamDatum objects to merge.
+///
+/// Returns:
+///     A list of newly added UpstreamDatum objects.
 #[pyfunction]
 fn update_from_guesses(
     py: Python,
@@ -575,6 +763,11 @@ fn update_from_guesses(
     .collect())
 }
 
+/// Python module for upstream project metadata detection and management.
+///
+/// This module provides functionality to discover, validate, and manage
+/// metadata about upstream software projects, such as names, versions,
+/// homepages, repositories, licenses, and more.
 #[pymodule]
 fn _upstream_ontologist(m: &Bound<PyModule>) -> PyResult<()> {
     pyo3_log::init();
