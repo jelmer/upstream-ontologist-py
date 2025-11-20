@@ -369,7 +369,7 @@ impl UpstreamMetadata {
     }
 
     #[pyo3(signature = (field, default=None))]
-    pub fn get(&self, py: Python, field: &str, default: Option<Py<PyAny>>) -> PyObject {
+    pub fn get(&self, py: Python, field: &str, default: Option<Py<PyAny>>) -> Py<PyAny> {
         let default = default.unwrap_or_else(|| py.None());
         let value = self.0.get(field).map(|datum| {
             UpstreamDatum(datum.clone())
