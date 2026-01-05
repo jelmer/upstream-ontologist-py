@@ -997,7 +997,7 @@ dependencies = [
  "log",
  "mailparse",
  "maplit",
- "reqwest",
+ "reqwest 0.12.28",
  "tokio",
  "xmltree 0.11.0",
 ]
@@ -4768,6 +4768,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "reqwest"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "04e9018c9d814e5f30cc16a0f03271aeab3571e609612d9fe78c1aa8d11c2f62"
+dependencies = [
+ "base64",
+ "bytes",
+ "futures-channel",
+ "futures-core",
+ "futures-util",
+ "http",
+ "http-body",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "js-sys",
+ "log",
+ "percent-encoding",
+ "pin-project-lite",
+ "serde",
+ "serde_json",
+ "sync_wrapper",
+ "tokio",
+ "tower",
+ "tower-http",
+ "tower-service",
+ "url",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
 name = "rfc2047-decoder"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6110,7 +6143,7 @@ dependencies = [
  "quote",
  "r-description",
  "regex",
- "reqwest",
+ "reqwest 0.12.28",
  "rst_parser",
  "rst_renderer",
  "rust-ini",
@@ -6136,7 +6169,7 @@ dependencies = [
  "log",
  "pyo3",
  "pyo3-log",
- "reqwest",
+ "reqwest 0.13.1",
  "serde_json",
  "tokio",
  "upstream-ontologist",
