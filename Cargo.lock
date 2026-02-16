@@ -977,9 +977,9 @@ dependencies = [
 
 [[package]]
 name = "deb822-lossless"
-version = "0.5.5"
+version = "0.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c4b7d08154e599ffe6652ff71969763c70a93e2acc3cd9c274e576028fddd4f1"
+checksum = "e25a82acbb59f93c4b2bb389e1fea66f5c81393ab7d1c6df3bfb58554fd93b00"
 dependencies = [
  "regex",
  "rowan",
@@ -1078,10 +1078,12 @@ dependencies = [
 
 [[package]]
 name = "debian-watch"
-version = "0.2.20"
+version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "768cf538101583d708e872964dded949ab6730969f0d8ed479657505b158fa79"
+checksum = "3a2fcd3ce16d12fe6c2892adc8708eabc0ff4ab02290ca2436951458b32ad8ea"
 dependencies = [
+ "clap",
+ "deb822-lossless",
  "debversion",
  "m_lexer",
  "regex",
@@ -6106,9 +6108,9 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "upstream-ontologist"
-version = "0.3.8"
+version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b84e8bab417d603a75b68978c363c75cc66b79592bb63de0605053d655b86842"
+checksum = "d008da4c89b51672b52e357253432ef50bd18793c922e159a43a0825dd960a9b"
 dependencies = [
  "async-trait",
  "bit-set 0.8.0",
