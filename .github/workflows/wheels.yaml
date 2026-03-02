@@ -89,7 +89,7 @@ jobs:
       - uses: actions/setup-python@v6
 
       - name: Download wheels
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           merge-multiple: true
           patterns: artifact-*
