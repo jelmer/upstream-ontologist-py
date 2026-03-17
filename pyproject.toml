@@ -100,7 +100,8 @@ environment = {PATH="$HOME/.cargo/bin:$PATH"}
 skip = "pp*-* *musllinux*"
 
 [tool.cibuildwheel.linux]
-before-build = "if command -v yum; then yum -y install libatomic openssl-devel; fi && if command -v apk; then apk add openssl-dev pkgconfig; fi && pip install -U setuptools-rust && curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=stable --profile=minimal -y && rustup show"
+before-build = "if command -v yum; then yum -y install libatomic openssl3-devel || yum -y install libatomic openssl-devel; fi && if command -v apk; then apk add openssl-dev pkgconfig; fi && pip install -U setuptools-rust && curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=stable --profile=minimal -y && rustup show"
+environment = {PATH="$HOME/.cargo/bin:$PATH", OPENSSL_INCLUDE_DIR="/usr/include/openssl3", OPENSSL_LIB_DIR="/usr/lib64/openssl3"}
 
 [tool.cibuildwheel.macos]
 macos = "x86_64 arm64 universal2"
