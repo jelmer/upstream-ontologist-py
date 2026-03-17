@@ -6338,7 +6338,7 @@ dependencies = [
 
 [[package]]
 name = "upstream-ontologist-py"
-version = "0.2.10"
+version = "0.2.11"
 dependencies = [
  "futures",
  "log",
