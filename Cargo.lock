@@ -6281,9 +6281,9 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "upstream-ontologist"
-version = "0.3.12"
+version = "0.3.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99f29ed191334cbf84bf4d3994871d84d7a83baf973b08d0fe35595e415e546b"
+checksum = "da7e0c0b302e11d1f3b4de0aef2b728dc07291c9a7d5bcef7316e580e6a3a8e2"
 dependencies = [
  "async-trait",
  "bit-set 0.8.0",
