@@ -561,6 +561,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "cargo_toml"
+version = "0.22.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "374b7c592d9c00c1f4972ea58390ac6b18cbb6ab79011f3bdc90a0b82ca06b77"
+dependencies = [
+ "serde",
+ "toml 0.9.12+spec-1.1.0",
+]
+
+[[package]]
 name = "cc"
 version = "1.2.57"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6281,14 +6291,15 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "upstream-ontologist"
-version = "0.3.12"
+version = "0.3.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99f29ed191334cbf84bf4d3994871d84d7a83baf973b08d0fe35595e415e546b"
+checksum = "cbd22b8c03b2f314bef7b60f2cef29afb7b4cec8413fe3e97dd544630e48e1ed"
 dependencies = [
  "async-trait",
  "bit-set 0.8.0",
  "bit-vec 0.8.0",
  "breezyshim",
+ "cargo_toml",
  "chrono",
  "configparser",
  "debbugs",
