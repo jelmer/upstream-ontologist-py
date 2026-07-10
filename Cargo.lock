@@ -4704,9 +4704,9 @@ checksum = "640c9bd8497b02465aeef5375144c26062e0dcd5939dfcbb0f5db76cb8c17c73"
 
 [[package]]
 name = "r-description"
-version = "0.3.7"
+version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f97b1f65f8b0a2687d665c2d16e866f69c5c2f0486ccf905b776badacb3ebb53"
+checksum = "99e0253e7a98ba03449cfc08caba2e654883056de24f256793e0d4f0c012a159"
 dependencies = [
  "deb822-derive",
  "deb822-fast",
@@ -6217,9 +6217,9 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "upstream-ontologist"
-version = "0.3.21"
+version = "0.3.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "391a5a20829a1e5af116bbc75ad27fd74b9572c51f5d4ad360113c773a32289d"
+checksum = "f4ff42f639261b064f09bad6e7d7920a7c8fcf4eb80fdfdc005559bd578f77fb"
 dependencies = [
  "async-trait",
  "base64",
