@@ -210,7 +210,7 @@ fn extract_str_value(py: Python, value: Py<PyAny>) -> PyResult<String> {
 /// Represents metadata fields like Name, Version, Homepage, Repository, etc.
 /// along with information about how certain we are of the value and where it came from.
 #[derive(Clone)]
-#[pyclass]
+#[pyclass(from_py_object)]
 struct UpstreamDatum(pub(crate) upstream_ontologist::UpstreamDatumWithMetadata);
 
 #[pymethods]
