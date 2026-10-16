@@ -149,6 +149,23 @@ pub fn find_secure_repo_url(
     .map(|u| u.to_string())
 }
 
+/// Sanitizes a VCS URL.
+///
+/// Runs the URL through all known sanitizers, dropping any VCS prefix from
+/// the scheme, fixing up Git locations and RCP-style URLs and preferring the
+/// public, canonical and secure form of the repository where one is known.
+///
+/// Args:
+///     url: The VCS URL to sanitize.
+///
+/// Returns:
+///     The sanitized URL string, or the URL unchanged if no sanitizer applies.
+#[pyfunction]
+fn sanitize_url(url: &str) -> String {
+    let rt = get_runtime();
+    rt.block_on(upstream_ontologist::vcs::sanitize_url(url))
+}
+
 /// Converts a list of CVS repository URLs to a single string representation.
 ///
 /// Args:
@@ -782,6 +799,7 @@ fn _upstream_ontologist(m: &Bound<PyModule>) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(guess_upstream_metadata_items))?;
     m.add_wrapped(wrap_pyfunction!(update_from_guesses))?;
     m.add_wrapped(wrap_pyfunction!(find_secure_repo_url))?;
+    m.add_wrapped(wrap_pyfunction!(sanitize_url))?;
     m.add_wrapped(wrap_pyfunction!(convert_cvs_list_to_str))?;
     m.add_wrapped(wrap_pyfunction!(fixup_broken_git_details))?;
     m.add_class::<UpstreamMetadata>()?;
