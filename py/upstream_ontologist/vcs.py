@@ -20,6 +20,7 @@ __all__ = [
     "find_secure_repo_url",
     "convert_cvs_list_to_str",
     "fixup_broken_git_details",
+    "sanitize_url",
 ]
 
 from ._upstream_ontologist import (  # noqa: F401
@@ -30,4 +31,5 @@ from ._upstream_ontologist import (  # noqa: F401
     find_secure_repo_url,
     fixup_broken_git_details,
     fixup_rcp_style_git_repo_url,
+    sanitize_url,
 )

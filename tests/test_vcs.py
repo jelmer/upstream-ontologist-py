@@ -22,6 +22,7 @@ from upstream_ontologist.vcs import (
     canonical_git_repo_url,
     find_public_repo_url,
     fixup_rcp_style_git_repo_url,
+    sanitize_url,
 )
 
 
@@ -97,3 +98,24 @@ class FixupRcpStyleUrlTests(TestCase):
             "ssh://git@salsa.debian.org/jelmer/example",
             fixup_rcp_style_git_repo_url("ssh://git@salsa.debian.org/jelmer/example"),
         )
+
+
+class SanitizeUrlTests(TestCase):
+    def test_rcp_style(self):
+        try:
+            import breezy  # noqa: F401
+        except ModuleNotFoundError:
+            self.skipTest("breezy is not available")
+        self.assertEqual(
+            "https://github.com/jelmer/example.git",
+            sanitize_url("github.com:jelmer/example"),
+        )
+
+    def test_vcs_in_scheme(self):
+        self.assertEqual(
+            "https://github.com/jelmer/example.git",
+            sanitize_url("git+https://github.com/jelmer/example"),
+        )
+
+    def test_leave_unparseable(self):
+        self.assertEqual("not a url at all", sanitize_url("not a url at all"))
